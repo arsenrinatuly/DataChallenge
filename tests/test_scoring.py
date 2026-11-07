@@ -117,3 +117,10 @@ class HeuristicTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class HumanRefsTest(unittest.TestCase):
+    def test_zero_based_refs_become_ui_numbers(self):
+        from backend.evaluator import human_refs
+        self.assertEqual(human_refs("в [9] и [11], затем [0]"), "в #10 и #12, затем #1")
+        self.assertIsNone(human_refs(None))

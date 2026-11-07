@@ -213,6 +213,14 @@ def _pts(score, cid):
     return row or {}
 
 
+_REF = __import__("re").compile(r"\[(\d{1,4})\]")
+
+
+def human_refs(text):
+    """Модель ссылается на реплики по индексу с нуля ([9]), а интерфейс нумерует с единицы (#10)."""
+    return _REF.sub(lambda m: f"#{int(m.group(1)) + 1}", text) if isinstance(text, str) else text
+
+
 def to_view(ev: dict, appeals: list[dict]) -> dict:
     """Формирует объект Evaluation из API-контракта для фронтенда."""
     cl = ev["checklist_snapshot"]
@@ -235,8 +243,8 @@ def to_view(ev: dict, appeals: list[dict]) -> dict:
                          "effective_weight": op.get("effective_weight"), "applicable": op.get("applicable")},
             "final": {"answer": f.get("answer"), "points": fp.get("points"),
                       "effective_weight": fp.get("effective_weight"), "applicable": fp.get("applicable")},
-            "explanation": o.get("explanation"), "evidence": o.get("evidence", []),
-            "checked_range": o.get("checked_range"), "na_reason": f.get("na_reason") or o.get("na_reason"),
+            "explanation": human_refs(o.get("explanation")), "evidence": o.get("evidence", []),
+            "checked_range": o.get("checked_range"), "na_reason": human_refs(f.get("na_reason") or o.get("na_reason")),
             "confidence": o.get("confidence"), "source": o.get("source"),
             "appeal": None if not a else {"id": a["id"], "status": a["status"], "comment": a["comment"],
                                           "author": a["author"], "decision": a["decision"]},

@@ -220,7 +220,7 @@ def r_conv(h, body, q, cid):
                          "original_total": e["score"]["total"], "gross_error": e["final_score"]["gross_error"],
                          "checklist_id": e["checklist_id"], "checklist_name": e["checklist_snapshot"].get("name"),
                          "checklist_version": e["checklist_snapshot"].get("version"), "engine": e["engine"]}
-                        for e in store.list_evaluations(cid)]
+                        for e in reversed(store.list_evaluations(cid))]  # от старых к новым: UI берёт последнюю
     # Запись звонка отдаём через свой прокси: исходник — эндпоинт Power Automate, а не mp3
     c["audio_src"] = f"/api/audio/{urllib.parse.quote(cid)}" if c.get("audio_url") else None
     return c
