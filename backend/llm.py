@@ -6,6 +6,7 @@
       эндпоинт), локальная Ollama/LM Studio (CQA_LLM_BASE_URL=http://localhost:11434/v1).
   CQA_LLM_API_KEY, CQA_LLM_MODEL, CQA_LLM_BASE_URL
   CQA_PRICE_IN_PER_M, CQA_PRICE_OUT_PER_M — цена за 1M входных/выходных токенов в USD
+  CQA_LLM_EFFORT — глубина рассуждений Claude: low | medium | high (по умолчанию medium)
       (для отчёта «стоимость одной оценки»).
 """
 from __future__ import annotations
@@ -79,6 +80,17 @@ def _post(url, headers, body, timeout):
     raise last
 
 
+def _anthropic_body(model: str, system: str, user: str, max_tokens: int) -> dict:
+    """Новые модели Claude (Sonnet 5.5, Opus 5.5 и др.) не принимают temperature и всегда думают:
+    мышление расходует max_tokens, поэтому лимит выше, а глубину задаёт effort."""
+    body = {"model": model, "max_tokens": max(max_tokens, 16000), "system": system,
+            "messages": [{"role": "user", "content": user}]}
+    effort = os.environ.get("CQA_LLM_EFFORT", "medium").strip()
+    if effort:
+        body["output_config"] = {"effort": effort}
+    return body
+
+
 def chat(system: str, user: str, max_tokens: int = 4000) -> dict:
     """Возвращает {text, input_tokens, output_tokens, cost_usd, model}."""
     c = config()
@@ -87,8 +99,7 @@ def chat(system: str, user: str, max_tokens: int = 4000) -> dict:
     if c["provider"] == "anthropic":
         resp = _post(f"{c['base_url']}/v1/messages",
                      {"x-api-key": c["api_key"], "anthropic-version": "2023-06-01"},
-                     {"model": c["model"], "max_tokens": max_tokens, "temperature": 0,
-                      "system": system, "messages": [{"role": "user", "content": user}]},
+                     _anthropic_body(c["model"], system, user, max_tokens),
                      c["timeout"])
         text = "".join(b.get("text", "") for b in resp.get("content", []) if b.get("type") == "text")
         usage = resp.get("usage", {})
