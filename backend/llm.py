@@ -60,7 +60,7 @@ def public_config() -> dict:
 
 def _post(url, headers, body, timeout):
     data = json.dumps(body).encode("utf-8")
-    req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json", **headers})
+    req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json", "User-Agent": "cqa-hackathon/1.0", **headers})
     last = None
     for attempt in range(3):
         try:
