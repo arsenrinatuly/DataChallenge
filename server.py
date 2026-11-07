@@ -221,6 +221,8 @@ def r_conv(h, body, q, cid):
                          "checklist_id": e["checklist_id"], "checklist_name": e["checklist_snapshot"].get("name"),
                          "checklist_version": e["checklist_snapshot"].get("version"), "engine": e["engine"]}
                         for e in store.list_evaluations(cid)]
+    # Запись звонка отдаём через свой прокси: исходник — эндпоинт Power Automate, а не mp3
+    c["audio_src"] = f"/api/audio/{urllib.parse.quote(cid)}" if c.get("audio_url") else None
     return c
 
 
@@ -403,6 +405,84 @@ def r_decide(h, body, q, aid):
     return {"appeal": appeal, "evaluation": evaluation_view(ev["id"])}
 
 
+# ------------------------------------------------------------------ audio
+AUDIO_DIR = os.path.join(ROOT, "data", "audio")
+_audio_lock = threading.Lock()
+_MAGIC = [(b"ID3", "audio/mpeg"), (b"\xff\xfb", "audio/mpeg"), (b"\xff\xf3", "audio/mpeg"),
+          (b"\xff\xf2", "audio/mpeg"), (b"RIFF", "audio/wav"), (b"OggS", "audio/ogg"),
+          (b"fLaC", "audio/flac"), (b"\x1aE\xdf\xa3", "audio/webm")]
+
+
+def sniff_audio_type(data: bytes, fallback: str = "application/octet-stream") -> str:
+    for sig, ctype in _MAGIC:
+        if data.startswith(sig):
+            return ctype
+    if data[4:8] == b"ftyp":
+        return "audio/mp4"
+    return fallback
+
+
+def unwrap_audio(data: bytes, ctype: str):
+    """Power Automate часто отдаёт файл в JSON-обёртке {"$content-type": ..., "$content": base64}
+    или ссылку на файл. Возвращает (bytes, content_type) либо (None, url) для повторного запроса."""
+    if data[:1] in (b"{", b"[") or "json" in ctype:
+        import base64
+        try:
+            obj = json.loads(data.decode("utf-8"))
+        except (ValueError, UnicodeDecodeError):
+            return data, sniff_audio_type(data, ctype)
+        stack = [obj]
+        while stack:
+            o = stack.pop()
+            if isinstance(o, dict):
+                if "$content" in o:
+                    raw = base64.b64decode(o["$content"])
+                    return raw, sniff_audio_type(raw, o.get("$content-type") or "audio/mpeg")
+                for k in ("url", "audio_url", "downloadUrl", "link"):
+                    if isinstance(o.get(k), str) and o[k].startswith("http"):
+                        return None, o[k]
+                stack.extend(o.values())
+            elif isinstance(o, list):
+                stack.extend(o)
+        bad("Ответ источника записи не содержит аудио", 502)
+    return data, sniff_audio_type(data, ctype.split(";")[0].strip() or "application/octet-stream")
+
+
+def load_audio(cid: str):
+    """Скачивает запись звонка один раз и кэширует в data/audio/. Возвращает (path, content_type)."""
+    c = store.get_conversation(cid)
+    if not c or not c.get("audio_url"):
+        bad("У диалога нет записи", 404)
+    safe = re.sub(r"[^A-Za-z0-9_.-]", "_", cid)
+    os.makedirs(AUDIO_DIR, exist_ok=True)
+    meta_path = os.path.join(AUDIO_DIR, safe + ".type")
+    path = os.path.join(AUDIO_DIR, safe + ".bin")
+    with _audio_lock:
+        if os.path.exists(path) and os.path.exists(meta_path):
+            return path, open(meta_path, encoding="utf-8").read().strip()
+        url = c["audio_url"]
+        for _ in range(3):
+            req = urllib.request.Request(url, headers={"User-Agent": "CQA/1.0", "Accept": "audio/*,*/*"})
+            try:
+                with urllib.request.urlopen(req, timeout=120) as r:
+                    data, ctype = r.read(), r.headers.get("Content-Type", "")
+            except urllib.error.HTTPError as e:
+                bad(f"Источник записи ответил {e.code}", 502)
+            except urllib.error.URLError as e:
+                bad(f"Источник записи недоступен: {e.reason}", 502)
+            data, ctype = unwrap_audio(data, ctype)
+            if data is not None:
+                break
+            url = ctype  # пришла ссылка на файл — идём по ней
+        else:
+            bad("Слишком много перенаправлений к записи", 502)
+        with open(path, "wb") as f:
+            f.write(data)
+        with open(meta_path, "w", encoding="utf-8") as f:
+            f.write(ctype)
+        return path, ctype
+
+
 # ------------------------------------------------------------------ http
 class Handler(SimpleHTTPRequestHandler):
     server_version = "CQA/1.0"
@@ -457,7 +537,40 @@ class Handler(SimpleHTTPRequestHandler):
                     return self._send(500, {"error": f"Внутренняя ошибка: {e}"})
         return self._send(404, {"error": f"Нет маршрута {method} {path}"})
 
+    def _audio(self, cid):
+        try:
+            path, ctype = load_audio(cid)
+        except ApiError as e:
+            return self._send(e.status, e.payload)
+        size = os.path.getsize(path)
+        start, end = 0, size - 1
+        m = re.match(r"bytes=(\d*)-(\d*)", self.headers.get("Range") or "")
+        if m and (m.group(1) or m.group(2)):
+            if m.group(1):
+                start = int(m.group(1))
+                end = min(int(m.group(2)), size - 1) if m.group(2) else size - 1
+            else:
+                start = max(0, size - int(m.group(2)))
+            if start > end:
+                self.send_response(416)
+                self.send_header("Content-Range", f"bytes */{size}")
+                self.end_headers()
+                return
+            self.send_response(206)
+            self.send_header("Content-Range", f"bytes {start}-{end}/{size}")
+        else:
+            self.send_response(200)
+        self.send_header("Content-Type", ctype)
+        self.send_header("Accept-Ranges", "bytes")
+        self.send_header("Content-Length", str(end - start + 1))
+        self.end_headers()
+        with open(path, "rb") as f:
+            f.seek(start)
+            self.wfile.write(f.read(end - start + 1))
+
     def do_GET(self):
+        if self.path.startswith("/api/audio/"):
+            return self._audio(urllib.parse.unquote(urllib.parse.urlsplit(self.path).path[len("/api/audio/"):]))
         if self.path.startswith("/api/"):
             return self._api("GET")
         return super().do_GET()
