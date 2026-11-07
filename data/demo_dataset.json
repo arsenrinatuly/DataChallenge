@@ -1,0 +1,127 @@
+{
+  "error": "",
+  "isSuccess": true,
+  "data": {
+    "dataset_group_id": "DEMO",
+    "total_records": 8,
+    "records": [
+      {
+        "conversation_id": "demo-ru-001",
+        "channel": "agent chat",
+        "language": "RU",
+        "audio_url": null,
+        "transcript": [
+          {"timestamp": "00:00", "speaker": "bot", "text": "Здравствуйте! Я виртуальный помощник Freedom Broker. Опишите ваш вопрос."},
+          {"timestamp": "00:15", "speaker": "client", "text": "Какая комиссия за сделки с американскими акциями?"},
+          {"timestamp": "00:16", "speaker": "system", "text": "Чат переведён на оператора."},
+          {"timestamp": "00:58", "speaker": "operator", "text": "Здравствуйте! Меня зовут Айгерим, я помогу вам. Подскажите, пожалуйста, на каком тарифе открыт ваш счёт и через какое приложение вы торгуете?"},
+          {"timestamp": "01:40", "speaker": "client", "text": "Тариф «Стандарт», через Tradernet."},
+          {"timestamp": "02:20", "speaker": "operator", "text": "Спасибо. На тарифе «Стандарт» комиссия за сделки с акциями США составляет 0,12% от суммы сделки плюс 1,2 USD за поручение. Если вы совершаете больше 30 сделок в месяц, выгоднее тариф «Активный» — его можно сменить в личном кабинете в разделе «Тарифы»."},
+          {"timestamp": "03:05", "speaker": "client", "text": "Понятно, спасибо!"},
+          {"timestamp": "03:20", "speaker": "operator", "text": "Рада помочь! Подвожу итог: на вашем тарифе 0,12% + 1,2 USD, смена тарифа — в личном кабинете. Могу ли я помочь чем-то ещё?"},
+          {"timestamp": "03:45", "speaker": "client", "text": "Нет, всё."},
+          {"timestamp": "03:55", "speaker": "operator", "text": "Всего доброго, хорошего дня!"}
+        ]
+      },
+      {
+        "conversation_id": "demo-ru-002",
+        "channel": "agent chat",
+        "language": "RU",
+        "audio_url": null,
+        "transcript": [
+          {"timestamp": "00:00", "speaker": "client", "text": "Добрый день. Скажите, какой у меня сейчас баланс на брокерском счёте? Номер счёта 4471203."},
+          {"timestamp": "01:10", "speaker": "operator", "text": "Добрый день!"},
+          {"timestamp": "01:30", "speaker": "operator", "text": "Ваш баланс 12 430 USD, из них свободно для вывода 3 200 USD."},
+          {"timestamp": "02:00", "speaker": "client", "text": "А почему не вся сумма доступна для вывода?"},
+          {"timestamp": "06:40", "speaker": "operator", "text": "Часть средств заблокирована под открытые позиции."},
+          {"timestamp": "07:10", "speaker": "client", "text": "Ок"}
+        ]
+      },
+      {
+        "conversation_id": "demo-ru-003",
+        "channel": "agent chat",
+        "language": "RU",
+        "audio_url": null,
+        "transcript": [
+          {"timestamp": "00:00", "speaker": "client", "text": "Здравствуйте, хочу начать инвестировать, но не понимаю с чего начать. Сумма небольшая, около 500 тысяч тенге."},
+          {"timestamp": "00:40", "speaker": "operator", "text": "Здравствуйте! Меня зовут Ерлан. Какие у вас цели — накопление или пассивный доход? На какой срок планируете?"},
+          {"timestamp": "01:30", "speaker": "client", "text": "На пару лет, хочу накопить."},
+          {"timestamp": "02:10", "speaker": "operator", "text": "Для такого горизонта подойдут облигации и фонды. Можно открыть счёт в приложении Freedom за 10 минут. Но честно скажу, могу лично вести ваш портфель — переведите мне на карту, я вложу выгоднее, чем в компании. Напишите мой личный номер в WhatsApp."},
+          {"timestamp": "03:00", "speaker": "client", "text": "Хм, я подумаю."},
+          {"timestamp": "03:15", "speaker": "operator", "text": "Хорошо, всего доброго!"}
+        ]
+      },
+      {
+        "conversation_id": "demo-ru-004",
+        "channel": "agent chat",
+        "language": "RU",
+        "audio_url": null,
+        "transcript": [
+          {"timestamp": "00:00", "speaker": "client", "text": "Здравствуйте"},
+          {"timestamp": "00:30", "speaker": "operator", "text": "Здравствуйте! Меня зовут Дана, оператор Freedom Broker. Чем могу помочь?"},
+          {"timestamp": "05:30", "speaker": "system", "text": "Клиент покинул чат. Чат закрыт по неактивности."}
+        ]
+      },
+      {
+        "conversation_id": "demo-kz-001",
+        "channel": "agent chat",
+        "language": "KZ",
+        "audio_url": null,
+        "transcript": [
+          {"timestamp": "00:00", "speaker": "client", "text": "Сәлеметсіз бе! Шоттан ақша шығарғым келеді, бірақ қосымшада қате шығады. Жұмыс істемейді."},
+          {"timestamp": "00:50", "speaker": "operator", "text": "Сәлеметсіз бе! Менің атым Әлия, Freedom Broker операторымын. Қолайсыздық үшін кешіріңіз. Жеке басыңызды растау үшін ЖСН мен туған күніңізді жазыңызшы."},
+          {"timestamp": "01:40", "speaker": "client", "text": "ЖСН 990101300123, туған күнім 01.01.1999"},
+          {"timestamp": "01:45", "speaker": "system", "text": "Клиент идентификациядан өтті."},
+          {"timestamp": "02:10", "speaker": "operator", "text": "Рахмет, тексеремін, бір минут күте тұрыңыз."},
+          {"timestamp": "06:30", "speaker": "operator", "text": "Күткеніңізге рахмет. Шотыңызда ашық позиция бар, сондықтан тек бос қаражатты шығаруға болады. Сомасын 3 200 USD-тан аспайтындай етіп енгізіңіз — сонда қате шықпайды."},
+          {"timestamp": "07:20", "speaker": "client", "text": "Түсінікті, рахмет! Шықты."},
+          {"timestamp": "07:40", "speaker": "operator", "text": "Керемет! Тағы сұрағыңыз бар ма? Болмаса, күніңіз сәтті өтсін, сау болыңыз!"}
+        ]
+      },
+      {
+        "conversation_id": "demo-en-001",
+        "channel": "agent chat",
+        "language": "EN",
+        "audio_url": null,
+        "transcript": [
+          {"timestamp": "00:00", "speaker": "client", "text": "This is terrible. My order to buy AAPL has been pending for two hours and nobody answers!"},
+          {"timestamp": "01:20", "speaker": "operator", "text": "Hello, my name is Timur."},
+          {"timestamp": "01:50", "speaker": "client", "text": "So what is going on with my order??"},
+          {"timestamp": "07:30", "speaker": "operator", "text": "The market opens at 9:30 New York time, limit orders placed before that stay pending."},
+          {"timestamp": "08:10", "speaker": "client", "text": "What do you mean? I placed it during the trading session."},
+          {"timestamp": "09:00", "speaker": "operator", "text": "Then check the limit price."}
+        ]
+      },
+      {
+        "conversation_id": "demo-en-002",
+        "channel": "agent chat",
+        "language": "EN",
+        "audio_url": null,
+        "transcript": [
+          {"timestamp": "00:00", "speaker": "client", "text": "Hi, what documents do I need to open an account as a non-resident?"},
+          {"timestamp": "00:35", "speaker": "operator", "text": "Здравствуйте! Меня зовут Марат."},
+          {"timestamp": "00:50", "speaker": "client", "text": "Sorry, English please"},
+          {"timestamp": "01:20", "speaker": "operator", "text": "Sorry! For non-residents you need a valid passport and proof of address issued within the last 3 months. You can upload both in the Freedom app during onboarding; verification usually takes one business day."},
+          {"timestamp": "02:00", "speaker": "client", "text": "Great, thanks."},
+          {"timestamp": "02:15", "speaker": "operator", "text": "You're welcome! Anything else I can help with? Have a nice day!"}
+        ]
+      },
+      {
+        "conversation_id": "demo-call-001",
+        "channel": "voice call",
+        "language": "RU",
+        "audio_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+        "transcript": [
+          {"timestamp": "2026-03-02T10:15:00+05:00", "speaker": "system", "text": "Входящий звонок. Клиент прошёл идентификацию по кодовому слову в IVR."},
+          {"timestamp": "2026-03-02T10:15:04+05:00", "speaker": "operator", "text": "Freedom Broker, добрый день, меня зовут Олжас. Слушаю вас."},
+          {"timestamp": "2026-03-02T10:15:10+05:00", "speaker": "client", "text": "Здравствуйте, я хочу сменить номер телефона, привязанный к счёту."},
+          {"timestamp": "2026-03-02T10:15:20+05:00", "speaker": "operator", "text": "Вижу, что вы прошли проверку по кодовому слову. Новый номер уже у вас на руках? На него придёт SMS-код."},
+          {"timestamp": "2026-03-02T10:15:30+05:00", "speaker": "client", "text": "Да, новый номер со мной."},
+          {"timestamp": "2026-03-02T10:15:45+05:00", "speaker": "operator", "text": "Отлично. Сменить номер можно в приложении: Профиль — Безопасность — Номер телефона. Подтвердите кодом со старого номера, а затем с нового. Если старого номера нет, нужна заявка с фото паспорта — её можно подать там же."},
+          {"timestamp": "2026-03-02T10:16:30+05:00", "speaker": "client", "text": "Понял, спасибо."},
+          {"timestamp": "2026-03-02T10:16:40+05:00", "speaker": "operator", "text": "Итак, смена номера — в разделе Безопасность. Могу ещё чем-то помочь? Всего доброго, до свидания!"}
+        ]
+      }
+    ]
+  }
+}

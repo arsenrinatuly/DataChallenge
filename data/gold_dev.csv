@@ -1,0 +1,61 @@
+conversation_id,c01,c02,c03,c04,c05,c06,c07,c08,disputed,notes
+p1-ru-001,yes,na,na,20,yes,10,yes,no,,эталонный хороший чат
+p1-ru-002,yes,yes,na,20,yes,10,yes,no,c03,ID не понадобилась: данные не раскрывались (альтернатива c03=yes)
+p1-ru-003,yes,yes,na,10,yes,4,no,no,c04;c07,вопрос о комиссии проигнорирован; попрощался при открытом вопросе
+p1-ru-004,yes,yes,na,20,yes,10,yes,no,,
+p1-ru-005,yes,na,na,15,yes,4,yes,no,c04,невнятный путь к реквизитам — клиент переспросил
+p1-ru-006,yes,yes,yes,20,yes,10,yes,no,,личность подтверждена системой до проверки
+p1-ru-007,yes,na,na,10,yes,7,no,no,c06;c07,второй вопрос (когда выводить) без ответа
+p1-ru-008,yes,na,na,20,yes,10,yes,no,,
+p1-ru-009,yes,yes,no,5,no,4,yes,yes,c04;c07;c08,данные счёта раскрыты без идентификации — считаю раскрытием конфиденциальной информации
+p1-ru-010,yes,yes,yes,20,yes,10,yes,no,,длинный хороший чат
+p1-ru-011,yes,na,na,20,yes,10,yes,no,,
+p1-ru-012,yes,na,na,20,yes,10,na,no,,соединение прервано после ответа
+p1-ru-013,yes,na,na,20,yes,10,yes,no,,
+p1-ru-014,no,no,na,20,yes,4,yes,no,c07,"«Привет» без представления; переспросил уже сказанное"
+p1-ru-015,yes,na,na,15,yes,10,yes,no,c04,
+p1-ru-016,yes,no,na,15,yes,4,yes,no,c04;c05,совет без уточнения; «Ну, тогда сайт»
+p1-ru-017,yes,yes,na,20,yes,10,yes,no,,
+p1-ru-018,yes,no,na,0,no,0,no,no,c06,необоснованное утверждение и «Тогда не знаю»; оператор закрыл чат
+p1-ru-019,yes,yes,na,20,yes,10,yes,no,,
+p1-ru-020,yes,na,na,15,yes,10,yes,no,c04,про открытую позицию — только «рассматривать отдельно»
+p1-ru-021,yes,na,na,20,yes,10,yes,no,,
+p1-ru-022,yes,no,na,0,no,7,no,yes,c06,предложение перевести деньги лично оператору
+p1-ru-023,yes,na,na,20,yes,10,yes,yes,c05,частная платная консультация по личному номеру
+p1-ru-024,yes,na,na,20,yes,10,yes,no,,
+p1-ru-025,yes,na,na,na,yes,10,na,no,,клиент ушёл до запроса — пример N/A
+p1-ru-026,yes,no,na,0,no,4,no,no,,переспросил уже написанное; «Всё есть в приложении»; закрыл чат
+p1-ru-027,yes,na,na,20,yes,10,yes,no,,
+p1-ru-028,yes,na,na,20,yes,10,yes,no,,предупредил об ожидании
+p1-ru-029,yes,na,na,20,no,4,no,yes,c02;c07,оскорбление клиента
+p1-ru-030,yes,yes,na,20,yes,10,yes,no,,
+p1-kz-001,yes,na,na,20,yes,10,yes,no,,
+p1-kz-002,yes,na,na,20,yes,10,yes,no,,
+p1-kz-003,yes,yes,yes,20,yes,10,yes,no,,
+p1-kz-004,yes,na,na,20,yes,10,yes,no,,
+p1-kz-005,yes,na,na,15,yes,4,no,no,c04,сначала неверный путь; в конце только «Жақсы.» без прощания
+p1-kz-006,yes,na,na,20,yes,10,yes,no,,
+p1-kz-007,yes,na,na,20,yes,10,yes,no,,
+p1-kz-008,no,no,na,20,yes,4,no,no,,"«Сәлем» без представления; переспросил; не завершил"
+p1-kz-009,yes,na,na,20,yes,10,yes,no,,
+p1-kz-010,yes,na,na,20,yes,10,yes,no,,
+p1-kz-011,yes,na,na,20,yes,10,na,no,,связь прервалась
+p1-kz-012,yes,yes,na,20,yes,10,yes,no,,корректный следующий шаг
+p1-kz-013,yes,na,na,20,yes,10,no,yes,c05,частная платная консультация; оператор закрыл чат
+p1-kz-014,yes,na,na,20,yes,7,yes,no,c06,«Иә» на вопрос о казахском при ответе «на английском»
+p1-kz-015,yes,na,no,5,no,4,yes,yes,c02;c07;c08,данные счёта раскрыты без идентификации
+p1-en-001,yes,na,na,20,yes,10,yes,no,,
+p1-en-002,yes,na,na,20,yes,10,yes,no,,
+p1-en-003,yes,na,na,20,yes,10,yes,no,,
+p1-en-004,yes,na,na,20,yes,10,yes,no,,
+p1-en-005,yes,na,na,20,yes,10,yes,no,,
+p1-en-006,yes,yes,yes,20,yes,10,yes,no,,
+p1-en-007,yes,na,na,10,yes,7,no,no,c06;c07,вопрос о повторном выводе без ответа
+p1-en-008,yes,na,na,15,yes,10,yes,no,c04,
+p1-en-009,yes,na,na,20,yes,10,na,no,,соединение потеряно
+p1-en-010,yes,na,na,20,yes,10,yes,no,,
+p1-en-011,yes,na,na,20,yes,10,yes,no,,
+p1-en-012,yes,na,na,20,yes,10,yes,no,,
+p1-en-013,yes,na,na,20,yes,10,no,yes,c05,частная платная консультация; агент закрыл чат
+p1-en-014,yes,na,no,5,no,4,no,yes,c08,данные счёта раскрыты без идентификации; вопрос клиента проигнорирован
+p1-en-015,no,no,na,15,yes,4,yes,no,c07,нет приветствия и представления; неверный первый совет
