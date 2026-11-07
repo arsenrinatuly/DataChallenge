@@ -425,6 +425,14 @@ def sniff_audio_type(data: bytes, fallback: str = "application/octet-stream") ->
 def unwrap_audio(data: bytes, ctype: str):
     """Power Automate часто отдаёт файл в JSON-обёртке {"$content-type": ..., "$content": base64}
     или ссылку на файл. Возвращает (bytes, content_type) либо (None, url) для повторного запроса."""
+    head = data[:4096].lstrip().lower()
+    if "html" in ctype or head.startswith((b"<!doctype html", b"<html")):
+        # Power Automate отдаёт страницу-плеер: <audio><source src="...dynamics.com/...">
+        import html as _html
+        m = re.search(rb"""<(?:source|audio)\b[^>]*\bsrc\s*=\s*["']([^"']+)["']""", data, re.I)
+        if not m:
+            bad("Страница записи не содержит ссылки на аудио", 502)
+        return None, _html.unescape(m.group(1).decode("utf-8", "replace"))
     if data[:1] in (b"{", b"[") or "json" in ctype:
         import base64
         try:
