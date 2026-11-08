@@ -1,6 +1,12 @@
-# CQA — Conversation Quality Analytics
+# CQA — Conversation Quality Analytics · команда Gashtar
 
 Прототип для хакатона Freedom Broker. Система оценивает работу оператора в чатах и звонках по настраиваемому чек-листу, показывает обоснование по каждому критерию со ссылкой на реплику и поддерживает апелляции с решением проверяющего.
+
+**Команда Gashtar**
+
+- **Арсен** — фронтенд (интерфейс, Web Components)
+- **Амиржан** — бэкенд, оценка через LLM, ручная разметка и сравнение моделей
+- **Әміре** — тестирование
 
 **Что умеет**
 
@@ -68,6 +74,17 @@ python3 cli.py report --dataset <group_id>            # итоги по диал
 ```
 
 `cli.py evaluate` оценивает диалоги по одному. Параллельная оценка идёт через сервер: кнопка «Оценить все» или `POST /api/evaluate/batch`.
+
+**Выгрузка результатов для организаторов** (формат JSON 1.0 из приложения к гайду):
+
+```bash
+python3 cli.py export --dataset DEV --out results/dev/results.json
+python3 cli.py export --dataset FBroker --out results/prod/results.json
+```
+
+Готовые файлы лежат в репозитории: `results/dev/results.json` (65 диалогов DEV) и `results/prod/results.json` (10 контрольных чатов FBroker). Оценки сделаны моделью DeepSeek V4.1 Flash (`deepseek-flash`).
+
+В файл попадают все диалоги набора: 8 критериев с кодами `contact` … `critical`, значения `true`/`false`/`null` или балл шкалы, обоснование, номера реплик (с 1, по исходному массиву транскрипта), итог и `critical_flag`. Берётся последняя оценка с учётом решений по апелляциям. Если диалог не оценён, он записывается со `status: "error"`.
 
 ---
 
