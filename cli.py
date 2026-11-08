@@ -90,6 +90,14 @@ def _export_value(crit, answer):
     return answer == "yes"
 
 
+def _shift_refs(text):
+    """Модель ссылается на реплики индексами с 0 ([11]); в файле нумерация с 1, как в evidence_turns."""
+    import re
+    return re.sub(r"\[(\d+)((?:\s*[-–,]\s*\d+)*)\]",
+                  lambda m: "[" + re.sub(r"\d+", lambda d: str(int(d.group()) + 1), m.group(1) + m.group(2)) + "]",
+                  text)
+
+
 def _export_one(cid):
     ev = None
     try:
@@ -110,7 +118,7 @@ def _export_one(cid):
             turns = sorted({int(e["index"]) + 1 for e in (r.get("evidence") or [])
                             if isinstance(e.get("index"), int)})
             out[code] = {"criterion_id": code, "value": _export_value(c, r.get("answer")),
-                         "rationale": (r.get("explanation") or r.get("na_reason") or "").strip(),
+                         "rationale": _shift_refs((r.get("explanation") or r.get("na_reason") or "").strip()),
                          "evidence_turns": turns}
         missing = [k for k in EXPORT_ORDER if k not in out]
         if missing:
