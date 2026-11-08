@@ -37,9 +37,18 @@ def main():
     cp.add_argument("--checklist", help="сравнивать только оценки этим чек-листом")
     cp.add_argument("--details", action="store_true", help="показать все расхождения с объяснениями")
     cp.add_argument("--out", help="сохранить расхождения в CSV")
+    ex = sub.add_parser("export", help="выгрузить results.json в формате организаторов (JSON 1.0)")
+    ex.add_argument("--dataset", required=True)
+    ex.add_argument("--out", required=True, help="например results/dev/results.json")
+    ex.add_argument("--checklist", help="брать оценки только этим чек-листом")
+    ex.add_argument("--team", default="Gashtar")
+    ex.add_argument("--model-name", default=os.environ.get("CQA_EXPORT_MODEL", ""),
+                    help="по умолчанию берётся из оценок (CQA_LLM_MODEL)")
     a = ap.parse_args()
 
-    if a.cmd == "fetch":
+    if a.cmd == "export":
+        export(a)
+    elif a.cmd == "fetch":
         print(server.fetch_dataset(a.group_id))
     elif a.cmd == "import":
         with open(a.path, encoding="utf-8") as fh:
@@ -65,6 +74,94 @@ def main():
             le = c["latest_evaluation"] or {}
             print(f"{c['conversation_id']:<20} {c['language']:<3} {c['channel']:<11} "
                   f"{le.get('total', '—')!s:<8} {'ГРУБАЯ' if le.get('gross_error') else ''}")
+
+
+EXPORT_CODES = {"01": "contact", "02": "discovery", "03": "identification", "04": "consultation",
+                "05": "empathy", "06": "dialogue", "07": "closure", "08": "critical"}
+EXPORT_ORDER = list(EXPORT_CODES.values())
+
+
+def _export_value(crit, answer):
+    if answer in (None, "na"):
+        return None
+    if crit["type"] == "scale":
+        v = float(answer)
+        return int(v) if v.is_integer() else v
+    return answer == "yes"
+
+
+def _export_one(cid):
+    ev = None
+    try:
+        ev = server.store.latest_evaluation(cid, EXPORT_ARGS.checklist)
+        if not ev:
+            raise ValueError("Диалог не оценён.")
+        crits = ev["checklist_snapshot"]["criteria"]
+        results = {r["criterion_id"]: r for r in (ev.get("final_results") or ev["results"])}
+        out = {}
+        for pos, c in enumerate(crits):
+            code = EXPORT_CODES.get(str(c.get("code", "")).zfill(2)) or \
+                (EXPORT_ORDER[pos] if pos < len(EXPORT_ORDER) else None)
+            if not code or code in out:
+                continue
+            r = results.get(c["id"])
+            if r is None:
+                raise ValueError(f"Нет результата по критерию {c['id']}.")
+            turns = sorted({int(e["index"]) + 1 for e in (r.get("evidence") or [])
+                            if isinstance(e.get("index"), int)})
+            out[code] = {"criterion_id": code, "value": _export_value(c, r.get("answer")),
+                         "rationale": (r.get("explanation") or r.get("na_reason") or "").strip(),
+                         "evidence_turns": turns}
+        missing = [k for k in EXPORT_ORDER if k not in out]
+        if missing:
+            raise ValueError("В чек-листе нет критериев: " + ", ".join(missing))
+        sc = ev.get("final_score") or ev["score"]
+        if sc.get("total") is None:
+            raise ValueError("Итог не рассчитан.")
+        return {"conversation_id": cid, "status": "ok", "criteria": [out[k] for k in EXPORT_ORDER],
+                "score": {"final_score": round(float(sc["total"]), 2),
+                          "critical_flag": bool(out["critical"]["value"])}}, ev
+    except Exception as e:  # noqa: BLE001 — по требованию организаторов ошибка сохраняется записью
+        return {"conversation_id": cid, "status": "error", "criteria": [], "score": None,
+                "error": str(e) or e.__class__.__name__}, ev
+
+
+EXPORT_ARGS = None
+
+
+def export(a):
+    global EXPORT_ARGS
+    EXPORT_ARGS = a
+    convs = server.store.list_conversations(a.dataset)
+    if not convs:
+        sys.exit(f"Набор {a.dataset!r} пуст или не найден. Сначала: python3 cli.py fetch <group_id>")
+    rows, engines, seen = [], set(), set()
+    for c in convs:
+        cid = c["conversation_id"]
+        if cid in seen:
+            continue
+        seen.add(cid)
+        row, ev = _export_one(cid)
+        rows.append(row)
+        if ev and row["status"] == "ok":
+            engines.add(ev.get("engine") or "")
+    llm = sorted(e.split(":", 1)[1] for e in engines if e.startswith("llm:"))
+    has_heur = any(not e.startswith("llm:") for e in engines)
+    name = a.model_name or ", ".join(llm + (["offline heuristic rules"] if has_heur else [])) or "unknown"
+    mode = "hybrid" if (llm and has_heur) else "external_api" if llm else "local"
+    doc = {"schema_version": "1.0", "team_name": a.team, "model": {"mode": mode, "name": name},
+           "results": rows}
+    os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
+    with open(a.out, "w", encoding="utf-8") as fh:
+        json.dump(doc, fh, ensure_ascii=False, indent=2)
+        fh.write("\n")
+    errs = [r for r in rows if r["status"] == "error"]
+    print(f"Сохранено: {a.out} — записей {len(rows)}, ok {len(rows) - len(errs)}, ошибок {len(errs)}; "
+          f"модель: {mode} / {name}")
+    for r in errs:
+        print(f"  ОШИБКА {r['conversation_id']}: {r['error']}")
+    if engines - {e for e in engines if e.startswith("llm:")}:
+        print("  ВНИМАНИЕ: часть оценок сделана офлайн-правилами (heuristic). Переоцените их в режиме llm.")
 
 
 def compare(a):
